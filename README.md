@@ -13,6 +13,5 @@ Supports
 - Label colours (One per card) [Green, Yellow, Orange, Red, Purple, Blue, Sky, Lime, Pink, Black]
 - Checklists
 - Comments (Choose last comment or all comments)
-
-TODO:
 - Attachments
+- Choose what Lists and Cards to Print (checkbox)
