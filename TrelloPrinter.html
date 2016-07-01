@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
   <style type="text/css" media="print">
-    #no-print {display: none;}
-    a[href]:after { content: none !important; }
+    .no-print {display: none;}
+    a[href]:after { display: none !important; }
     .panel-semi-danger > .panel-heading {background-color: #ffd9b3 !important} 
     .panel-success > .panel-heading {background-color: #c6ecc6 !important; }
     .panel-warning > .panel-heading {background-color: #ffecb3 !important; }
@@ -73,11 +73,12 @@
     .panel-black { border-color: #595959; }
 	.panel-black > .panel-heading { background: #999999; color: #000000; border-color: #595959; }
 	.panel-black > .panel-heading > hr {border-top-color: #595959;} 
+    input.some-selected { opacity: 0.5; filter: alpha(opacity=50); }
 }
   </style>
 </head>
 <body>
-<div id="no-print">
+<div class="no-print">
 <input type="file" id="file-input" /><br />
 <input type="radio" name="comments" value="last" checked>Last Comment</input>
 <input type="radio" name="comments" value="all">All Comments</input>
@@ -91,61 +92,74 @@
 <div class="container-fluid"> 
 <div class="row col-md-12">
 {{#lists}}
-	<h3><strong><span class="glyphicon glyphicon-list-alt"></span> {{name}}</strong></h3>
-	{{#cards}}
-		<div class="panel panel-default {{panelColor}}">
-			<div class="panel-heading">
-				<div class="row">
-					<div class="col-sm-4">
-						<a href="{{url}}" target="_blank"><h4><span class="glyphicon glyphicon-file"></span> {{name}}</h4></a>
-					</div>
-					<div class="col-sm-4 text-center">
-						{{^members}}<span class="hidden">{{/members}}<h4><span class="glyphicon glyphicon-user"></span> {{#members}}{{initials}} {{/members}}</h4>{{^members}}</span>{{/members}}
-					</div>
-					<div class="col-sm-4 text-right">
-						{{^due}}<span class="hidden">{{/due}}<h4><span class="glyphicon glyphicon-time"></span> {{due}}</h4>{{^due}}</span>{{/due}}
-					</div>
-				</div>
-				{{^desc}}
-				<span class="hidden">
-				{{/desc}}
-				<hr />
-				<div class="row">
-					<div class="col-sm-12">
-						{{{desc}}}
-					</div>
-				</div>
-				{{^desc}}
-				</span>
-				{{/desc}}
-			</div>
-			{{^actions}}
-			<span class="hidden">
-			{{/actions}}
-			<ul class="list-group"> 
-				{{#actions}}
-					<li class="list-group-item action-item"><tt style="color:gray;"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> {{{text}}}</li>
-				{{/actions}}
-			</ul>
-			{{^actions}}
-			</span>
-			{{/actions}}	
-			{{^checklists}}
-			<span class="hidden">
-			{{/checklists}}
-			<ul class="list-group">
-				{{#checklists}}
-				<li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> {{name}}</li>
-					{{#checkItems}}
-					<li class="list-group-item">{{#state}}<span class="glyphicon glyphicon-check"></span>{{/state}}{{^state}}<span class="glyphicon glyphicon-unchecked"></span>{{/state}} {{{name}}}</li>
-					{{/checkItems}}
-				{{/checklists}}
-			</ul>
-			{{^checklists}}
-			</span>
-			{{/checklists}}
-		</div>
-	{{/cards}}
+    <div id="{{id}}">
+        <h3><strong><span class="glyphicon glyphicon-list-alt"></span> {{name}}</strong> <span class="no-print"><input type="checkbox" id="check-list-{{id}}" list-id="{{id}}" checked /></span></h3>
+        {{#cards}}
+            <div class="panel panel-default {{panelColor}}" id="{{id}}">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4><a href="{{url}}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{name}}</a> <span class="no-print"><input type="checkbox" id="check-card-{{id}}" card-list-id="{{idList}}" card-id="{{id}}" checked /></span></h4>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            {{^members}}<span class="hidden">{{/members}}<h4><span class="glyphicon glyphicon-user"></span> {{#members}}{{initials}} {{/members}}</h4>{{^members}}</span>{{/members}}
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            {{^due}}<span class="hidden">{{/due}}<h4><span class="glyphicon glyphicon-time"></span> {{due}}</h4>{{^due}}</span>{{/due}}
+                        </div>
+                    </div>
+                    {{^desc}}
+                    <span class="hidden">
+                    {{/desc}}
+                    <hr />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{{desc}}}
+                        </div>
+                    </div>
+                    {{^desc}}
+                    </span>
+                    {{/desc}}
+                </div>
+                {{^actions}}
+                <span class="hidden">
+                {{/actions}}
+                <ul class="list-group"> 
+                    {{#actions}}
+                        <li class="list-group-item action-item"><tt style="color:gray;"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> {{{text}}}</li>
+                    {{/actions}}
+                </ul>
+                {{^actions}}
+                </span>
+                {{/actions}}	
+                {{^checklists}}
+                <span class="hidden">
+                {{/checklists}}
+                <ul class="list-group">
+                    {{#checklists}}
+                    <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> {{name}}</li>
+                        {{#checkItems}}
+                        <li class="list-group-item">{{#state}}<span class="glyphicon glyphicon-check"></span>{{/state}}{{^state}}<span class="glyphicon glyphicon-unchecked"></span>{{/state}} {{{name}}}</li>
+                        {{/checkItems}}
+                    {{/checklists}}
+                </ul>
+                {{^checklists}}
+                </span>
+                {{/checklists}}
+				{{^attachments}}
+                <span class="hidden">
+                {{/attachments}}
+                <ul class="list-group">
+                    {{#attachments}}
+                    <li class="list-group-item"><span class="glyphicon glyphicon-paperclip"></span> <a href="{{url}}" target="_blank">{{name}}</a></li>
+                    {{/attachments}}
+                </ul>
+                {{^attachments}}
+                </span>
+                {{/attachments}}
+            </div>
+        {{/cards}}
+    </div>
 {{/lists}}
 </div>
 </div>
@@ -192,6 +206,8 @@ var sort_by = function(field, reverse, primer){
         }
 
         data.ref[list.id] = {
+                                id: list.id
+                                ,
                                 name: list.name
                                 ,
 								pos: list.pos
@@ -295,7 +311,11 @@ var sort_by = function(field, reverse, primer){
 		}
 
 		data.ref[card.id] = {
-								name: card.name
+								id: card.id
+                                ,
+                                idList: card.idList
+                                ,
+                                name: card.name
 								,
 								pos: card.pos
 								,
@@ -312,6 +332,8 @@ var sort_by = function(field, reverse, primer){
 								actions: []
 								,
 								checklists: []
+								,
+								attachments: []
 							}
 			
 		data.ref[card.idList].cards.push(data.ref[card.id]);
@@ -326,6 +348,23 @@ var sort_by = function(field, reverse, primer){
 			var idChecklist = trelloJson.cards[i].idChecklists[j]
 			
 			data.ref[card.id].checklists.push(data.ref[idChecklist])
+		}
+		
+		for (j in trelloJson.cards[i].attachments)
+		{
+			var attachment = trelloJson.cards[i].attachments[j]
+			
+			data.ref[attachment.id] = 	{
+											id: attachment.id
+											,
+											bytes: attachment.bytes
+											,
+											name: attachment.name
+											,
+											url: attachment.url
+										}
+			
+			data.ref[card.id].attachments.push(data.ref[attachment.id])
 		}
 		
 		data.ref[card.id].checklists.sort(sort_by('pos', false, parseInt));
@@ -348,7 +387,7 @@ var sort_by = function(field, reverse, primer){
 			data.ref[action.data.card.id].actions.push(data.ref[action.id])
         } catch(e){}
     }
- 
+	
     for (i=0; i < data.lists.length; i++)
     {
         if (data.lists[i].cards.length == 0)
@@ -385,13 +424,59 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
-$('#file-input').change(function(e){readSingleFile(e);});
-$("input[name='comments']").change(function(e){
-    if($(this).val() == 'all') {
-        $('.action-item:not(:first-of-type)').css('display', 'block');
-    } else {
-        $('.action-item:not(:first-of-type)').css('display', 'none');
-    }
+$(document).ready( function(){
+
+    $('#file-input').change(function(e){readSingleFile(e);});
+    $("input[name='comments']").change(function(e){
+        if($(this).val() == 'all') {
+            $('.action-item:not(:first-of-type)').css('display', 'block');
+        } else {
+            $('.action-item:not(:first-of-type)').css('display', 'none');
+        }
+    });
+
+    // Since the objects are dynamically loaded we must look for change in the 
+    // document and filter on the IDs 
+    $(document).on("change", "input[id*='check-card']", function() {
+        if($(this).is(':checked')) {
+            $("#" + $(this).attr("card-id")).toggleClass("no-print", false);
+        }
+        else {
+            $("#" + $(this).attr("card-id")).toggleClass("no-print", true);
+        }
+            
+        if ($("input[card-list-id='" + $(this).attr("card-list-id") + "']:checked").length == 0)
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).removeClass('some-selected').prop('checked', false);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", true);
+        }
+        else if ($("input[card-list-id='" + $(this).attr("card-list-id") + "']:not(:checked)").length == 0)
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).removeClass('some-selected').prop('checked', true);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", false);
+        }
+        else
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).addClass('some-selected').prop('checked', true);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", false);
+        }
+    });
+    
+    $(document).on("change", "input[id*='check-list']", function() {
+        if($(this).is(':checked')) {
+            $("#" + $(this).attr("list-id")).toggleClass("no-print", false);
+            $("input[card-list-id='" + $(this).attr("list-id") + "']").prop('checked', true);
+			//Can set cards in list to print by setting all panels to print
+			$("#" + $(this).attr("list-id") + " .panel").toggleClass("no-print", false);
+        }
+        else {
+            $("#" + $(this).attr("list-id")).toggleClass("no-print", true);
+            $("input[card-list-id='" + $(this).attr("list-id") + "']").prop('checked', false);
+			//Can set cards in list to no print by setting all panels to no print
+			$("#" + $(this).attr("list-id") + " .panel").toggleClass("no-print", true);
+        }
+    });
+   
 });
 </script>
 </body>
