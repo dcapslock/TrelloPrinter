@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<!--
+    Trello Board Printer
+    Copyright (C) 2016  Darryn Capes-Davis (dcapslock) - https://au.linkedin.com/in/dcapslock
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>dPrinter by dcapslock</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <style type="text/css" media="print">
+    .no-print {display: none;}
+    a[href]:after { display: none !important; }
+    .panel-semi-danger > .panel-heading {background-color: #ffd9b3 !important} 
+    .panel-success > .panel-heading {background-color: #c6ecc6 !important; }
+    .panel-warning > .panel-heading {background-color: #ffecb3 !important; }
+    .panel-danger > .panel-heading {background-color: #ffb3b3 !important; }
+    .panel-purple > .panel-heading {background-color: #ecb3ff !important; }
+    .panel-blue > .panel-heading {background-color: #b3b3ff !important; }
+    .panel-sky > .panel-heading {background-color: #b3f0ff !important; }
+    .panel-lime > .panel-heading {background-color: #b3ffe6 !important; }
+    .panel-pink > .panel-heading {background-color: #ffb3ff !important; }
+    .panel-black > .panel-heading {background-color: #999999 !important; }
+  </style>
+  
+  <style type="text/css">
+	.panel-heading { padding: 2px 10px; }
+	hr { margin-top: 0px; margin-bottom: 2px }
+    a, a:link, a:visited, a:hover, a:active { color: inherit; }
+    .action-item:not(:first-of-type) { display: none; }
+	.panel-semi-danger { border-color: #ffbf80; }
+	.panel-semi-danger > .panel-heading { background: #ffd9b3; color: #cc7a00; border-color: #ffbf80; }
+	.panel-semi-danger > .panel-heading > hr {border-top-color: #ffbf80;} 
+	.panel-success { border-color: #9fdf9f; }
+	.panel-success > .panel-heading { background: #c6ecc6; color: #339933; border-color: #9fdf9f; }
+	.panel-success > .panel-heading > hr {border-top-color: #9fdf9f;} 
+	.panel-warning { border-color: #ffdf80; }
+	.panel-warning > .panel-heading { background: #ffecb3; color: #cc9900; border-color: #ffdf80; }
+	.panel-warning > .panel-heading > hr {border-top-color: #ffdf80;} 
+	.panel-danger { border-color: #ff8080; }
+	.panel-danger > .panel-heading { background: #ffb3b3; color: #cc0000; border-color: #ff8080; }
+	.panel-danger > .panel-heading > hr {border-top-color: #ff8080;} 
+    .panel-purple { border-color: #df80ff; }
+	.panel-purple > .panel-heading { background: #ecb3ff; color: #9900cc; border-color: #df80ff; }
+	.panel-purple > .panel-heading > hr {border-top-color: #df80ff;} 
+    .panel-blue { border-color: #8080ff; }
+	.panel-blue > .panel-heading { background: #b3b3ff; color: #0000cc; border-color: #8080ff; }
+	.panel-blue > .panel-heading > hr {border-top-color: #8080ff;} 
+    .panel-sky { border-color: #80e5ff; }
+	.panel-sky > .panel-heading { background: #b3f0ff; color: #00a3cc; border-color: #80e5ff; }
+	.panel-sky > .panel-heading > hr {border-top-color: #80e5ff;} 
+    .panel-lime { border-color: #80ffd4; }
+	.panel-lime > .panel-heading { background: #b3ffe6; color: #00cc88; border-color: #80ffd4; }
+	.panel-lime > .panel-heading > hr {border-top-color: #80ffd4;} 
+    .panel-pink { border-color: #df80ff; }
+	.panel-pink > .panel-heading { background: #ffb3ff; color: #cc00cc; border-color: #df80ff; }
+	.panel-pink > .panel-heading > hr {border-top-color: #df80ff;} 
+    .panel-black { border-color: #595959; }
+	.panel-black > .panel-heading { background: #999999; color: #000000; border-color: #595959; }
+	.panel-black > .panel-heading > hr {border-top-color: #595959;} 
+    input.some-selected { opacity: 0.5; filter: alpha(opacity=50); }
+}
+  </style>
+</head>
+<body>
+<div class="no-print">
+<input type="file" id="file-input" /><br />
+<input type="radio" name="comments" value="last" checked>Last Comment</input>
+<input type="radio" name="comments" value="all">All Comments</input>
+</div>
+    <div id="out">
+      Please load file...
+    </div>
+
+
+<script type="text/html" id="template-output" >
+<div class="container-fluid"> 
+<div class="row col-md-12">
+{{#lists}}
+    <div id="{{id}}">
+        <h3><strong><span class="glyphicon glyphicon-list-alt"></span> {{name}}</strong> <span class="no-print"><input type="checkbox" id="check-list-{{id}}" list-id="{{id}}" checked /></span></h3>
+        {{#cards}}
+            <div class="panel panel-default {{panelColor}}" id="{{id}}">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4><a href="{{url}}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{name}}</a> <span class="no-print"><input type="checkbox" id="check-card-{{id}}" card-list-id="{{idList}}" card-id="{{id}}" checked /></span></h4>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            {{^members}}<span class="hidden">{{/members}}<h4><span class="glyphicon glyphicon-user"></span> {{#members}}{{initials}} {{/members}}</h4>{{^members}}</span>{{/members}}
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            {{^due}}<span class="hidden">{{/due}}<h4><span class="glyphicon glyphicon-time"></span> {{due}}</h4>{{^due}}</span>{{/due}}
+                        </div>
+                    </div>
+                    {{^desc}}
+                    <span class="hidden">
+                    {{/desc}}
+                    <hr />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{{desc}}}
+                        </div>
+                    </div>
+                    {{^desc}}
+                    </span>
+                    {{/desc}}
+                </div>
+                {{^actions}}
+                <span class="hidden">
+                {{/actions}}
+                <ul class="list-group"> 
+                    {{#actions}}
+                        <li class="list-group-item action-item"><tt style="color:gray;"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> {{{text}}}</li>
+                    {{/actions}}
+                </ul>
+                {{^actions}}
+                </span>
+                {{/actions}}	
+                {{^checklists}}
+                <span class="hidden">
+                {{/checklists}}
+                <ul class="list-group">
+                    {{#checklists}}
+                    <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> {{name}}</li>
+                        {{#checkItems}}
+                        <li class="list-group-item">{{#state}}<span class="glyphicon glyphicon-check"></span>{{/state}}{{^state}}<span class="glyphicon glyphicon-unchecked"></span>{{/state}} {{{name}}}</li>
+                        {{/checkItems}}
+                    {{/checklists}}
+                </ul>
+                {{^checklists}}
+                </span>
+                {{/checklists}}
+				{{^attachments}}
+                <span class="hidden">
+                {{/attachments}}
+                <ul class="list-group">
+                    {{#attachments}}
+                    <li class="list-group-item"><span class="glyphicon glyphicon-paperclip"></span> <a href="{{url}}" target="_blank">{{name}}</a></li>
+                    {{/attachments}}
+                </ul>
+                {{^attachments}}
+                </span>
+                {{/attachments}}
+            </div>
+        {{/cards}}
+    </div>
+{{/lists}}
+</div>
+</div>
+</script>
+
+ 
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js" type="text/javascript"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js" type="text/javascript"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.0/marked.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  
+var sort_by = function(field, reverse, primer){
+
+    var key = primer ? 
+    function(x) {return primer(x[field])} : 
+    function(x) {return x[field]};
+
+    reverse = !reverse ? 1 : -1;
+
+    return function (a, b) {
+        return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+    } 
+}
+  
+ function eatData(trelloJson){
+    var data = {
+                    board: trelloJson.name
+                    ,
+                    lists: []
+                    ,
+					members: []
+					,
+					checklists: []
+					,
+                    ref: {}
+                }
+ 
+    for(i in trelloJson.lists){
+        var list = trelloJson.lists[i]
+        if(list.closed){
+            continue;
+        }
+
+        data.ref[list.id] = {
+                                id: list.id
+                                ,
+                                name: list.name
+                                ,
+								pos: list.pos
+								,
+                                cards: []
+                            }
+        data.lists.push(data.ref[list.id])
+    }
+	
+	data.lists.sort(sort_by('pos', false, parseInt)); 
+	
+	for (i in trelloJson.members){
+		var member = trelloJson.members[i]
+		
+		data.ref[member.id] = 	{
+									fullName: member.fullName
+									,
+									initials: member.initials
+								}
+		data.members.push(data.ref[member.id])
+	}
+	 
+	for (i in trelloJson.checklists){
+		var checklist = trelloJson.checklists[i]
+		
+		data.ref[checklist.id] = 	{
+										name: checklist.name
+										,
+										pos: checklist.pos
+										,
+										checkItems: []
+									}
+		data.checklists.push(data.ref[checklist.id])
+		
+		for (j in checklist.checkItems){
+			var checkItem = checklist.checkItems[j]
+			
+			data.ref[checkItem.id] = {	
+										name: checkItem.name
+										,
+										pos: checkItem.pos
+										,
+										state: (checkItem.state == "complete") ? true : false
+										}
+			data.ref[checklist.id].checkItems.push(data.ref[checkItem.id])
+		}
+		
+		data.ref[checklist.id].checkItems.sort(sort_by('pos', false, parseInt));
+	}
+	
+    for(i in trelloJson.cards){
+        var card = trelloJson.cards[i]
+         if(card.closed){
+            continue;
+        }     
+
+		var trafficLight = ""
+		var panelColor = ""
+		for (j in trelloJson.cards[i].labels){
+			var label = trelloJson.cards[i].labels[j]
+			if (label.color == "green")
+			{
+				panelColor = "panel-success"
+			}
+			if (label.color == "orange")
+			{
+				panelColor = "panel-semi-danger"
+			}
+			if (label.color == "yellow")
+			{
+				panelColor = "panel-warning"
+			}
+			if (label.color == "red")
+			{
+				panelColor = "panel-danger"
+			}
+			if (label.color == "purple")
+			{
+				panelColor = "panel-purple"
+			}
+			if (label.color == "blue")
+			{
+				panelColor = "panel-blue"
+			}
+			if (label.color == "sky")
+			{
+				panelColor = "panel-sky"
+			}
+			if (label.color == "lime")
+			{
+				panelColor = "panel-lime"
+			}
+			if (label.color == "pink")
+			{
+				panelColor = "panel-pink"
+			}
+			if (label.color == "black")
+			{
+				panelColor = "panel-black"
+			}
+		}
+
+		data.ref[card.id] = {
+								id: card.id
+                                ,
+                                idList: card.idList
+                                ,
+                                name: card.name
+								,
+								pos: card.pos
+								,
+								url: card.url
+								,
+								desc: marked(card.desc)
+								,
+								due: moment(card.due).isValid() ? moment(card.due).format('DD/MM/YYYY') : ""
+								,
+								panelColor: panelColor
+								,
+								members: []
+								,
+								actions: []
+								,
+								checklists: []
+								,
+								attachments: []
+							}
+		try{	
+            data.ref[card.idList].cards.push(data.ref[card.id]);
+        } catch(e){}
+		
+		for (j in trelloJson.cards[i].idMembers){
+			var idMember = trelloJson.cards[i].idMembers[j]
+			
+			data.ref[card.id].members.push(data.ref[idMember])
+		}
+		
+		for (j in trelloJson.cards[i].idChecklists){
+			var idChecklist = trelloJson.cards[i].idChecklists[j]
+			
+			data.ref[card.id].checklists.push(data.ref[idChecklist])
+		}
+		
+		for (j in trelloJson.cards[i].attachments)
+		{
+			var attachment = trelloJson.cards[i].attachments[j]
+			
+			data.ref[attachment.id] = 	{
+											id: attachment.id
+											,
+											bytes: attachment.bytes
+											,
+											name: attachment.name
+											,
+											url: attachment.url
+										}
+			
+			data.ref[card.id].attachments.push(data.ref[attachment.id])
+		}
+		
+		data.ref[card.id].checklists.sort(sort_by('pos', false, parseInt));
+    }
+    
+    for(i in trelloJson.actions){
+        var action = trelloJson.actions[i]
+        if(action.type != "commentCard"){
+            continue;
+        }    
+       
+         data.ref[action.id] = {
+                                text: marked(action.data.text)
+                                ,
+                                date: moment(action.date).format('DD/MM/YYYY')
+								,
+								memberCreator: action.memberCreator.fullName
+                            }
+        try{
+			data.ref[action.data.card.id].actions.push(data.ref[action.id])
+        } catch(e){}
+    }
+	
+    for (i=0; i < data.lists.length; i++)
+    {
+        if (data.lists[i].cards.length == 0)
+        {
+            data.lists.splice(i, 1);
+            i--;
+        }
+		else
+		{
+			data.lists[i].cards.sort(sort_by('pos', false, parseInt));
+		}
+    }
+    	
+    return data;
+  }
+ 
+function showData(data){
+    var template = $('#template-output').html()
+    console.log(JSON.stringify(data,null,2))
+    $('#out').html(Mustache.render(template, data))
+}
+ 
+function readSingleFile(e) {
+    var file = e.target.files[0];
+    if (!file) {
+        return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var contents = e.target.result;
+
+        showData(eatData(JSON.parse(contents)));
+    };
+    reader.readAsText(file);
+}
+
+$(document).ready( function(){
+
+    $('#file-input').change(function(e){readSingleFile(e);});
+    $("input[name='comments']").change(function(e){
+        if($(this).val() == 'all') {
+            $('.action-item:not(:first-of-type)').css('display', 'block');
+        } else {
+            $('.action-item:not(:first-of-type)').css('display', 'none');
+        }
+    });
+
+    // Since the objects are dynamically loaded we must look for change in the 
+    // document and filter on the IDs 
+    $(document).on("change", "input[id*='check-card']", function() {
+        if($(this).is(':checked')) {
+            $("#" + $(this).attr("card-id")).toggleClass("no-print", false);
+        }
+        else {
+            $("#" + $(this).attr("card-id")).toggleClass("no-print", true);
+        }
+            
+        if ($("input[card-list-id='" + $(this).attr("card-list-id") + "']:checked").length == 0)
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).removeClass('some-selected').prop('checked', false);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", true);
+        }
+        else if ($("input[card-list-id='" + $(this).attr("card-list-id") + "']:not(:checked)").length == 0)
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).removeClass('some-selected').prop('checked', true);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", false);
+        }
+        else
+        {
+            $("#check-list-" + $(this).attr("card-list-id")).addClass('some-selected').prop('checked', true);
+            $("#" + $(this).attr("card-list-id")).toggleClass("no-print", false);
+        }
+    });
+    
+    $(document).on("change", "input[id*='check-list']", function() {
+        if($(this).is(':checked')) {
+            $("#" + $(this).attr("list-id")).toggleClass("no-print", false);
+            $("input[card-list-id='" + $(this).attr("list-id") + "']").prop('checked', true);
+			//Can set cards in list to print by setting all panels to print
+			$("#" + $(this).attr("list-id") + " .panel").toggleClass("no-print", false);
+        }
+        else {
+            $("#" + $(this).attr("list-id")).toggleClass("no-print", true);
+            $("input[card-list-id='" + $(this).attr("list-id") + "']").prop('checked', false);
+			//Can set cards in list to no print by setting all panels to no print
+			$("#" + $(this).attr("list-id") + " .panel").toggleClass("no-print", true);
+        }
+    });
+   
+});
+</script>
+</body>
+</html>
