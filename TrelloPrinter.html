@@ -26,6 +26,7 @@
   <style type="text/css" media="print">
     .no-print {display: none;}
     a[href]:after { display: none !important; }
+	.action-highlight {background: #ffff00 !important; }
     .panel-semi-danger > .panel-heading {background-color: #ffd9b3 !important} 
     .panel-success > .panel-heading {background-color: #c6ecc6 !important; }
     .panel-warning > .panel-heading {background-color: #ffecb3 !important; }
@@ -43,6 +44,7 @@
 	hr { margin-top: 0px; margin-bottom: 2px }
     a, a:link, a:visited, a:hover, a:active { color: inherit; }
     .action-item:not(:first-of-type) { display: none; }
+	.action-highlight {background: #ffff00; }
 	.panel-semi-danger { border-color: #ffbf80; }
 	.panel-semi-danger > .panel-heading { background: #ffd9b3; color: #cc7a00; border-color: #ffbf80; }
 	.panel-semi-danger > .panel-heading > hr {border-top-color: #ffbf80;} 
@@ -81,7 +83,8 @@
 <div class="no-print">
 <input type="file" id="file-input" /><br />
 <input type="radio" name="comments" value="last" checked>Last Comment</input>
-<input type="radio" name="comments" value="all">All Comments</input>
+<input type="radio" name="comments" value="all">All Comments</input><br />
+Highlight Date </input><input type="date" id="highlightDate" />
 </div>
     <div id="out">
       Please load file...
@@ -126,7 +129,9 @@
                 {{/actions}}
                 <ul class="list-group"> 
                     {{#actions}}
-                        <li class="list-group-item action-item"><tt style="color:gray;"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> {{{text}}}</li>
+                        <li class="list-group-item action-item">
+							<tt style="color:gray;" class="action-title" action-date="{{dateRaw}}"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> 
+						{{{text}}}</li>
                     {{/actions}}
                 </ul>
                 {{^actions}}
@@ -187,7 +192,7 @@ var sort_by = function(field, reverse, primer){
 }
   
  function eatData(trelloJson){
-    var data = {
+	var data = {
                     board: trelloJson.name
                     ,
                     lists: []
@@ -381,6 +386,8 @@ var sort_by = function(field, reverse, primer){
                                 ,
                                 date: moment(action.date).format('DD/MM/YYYY')
 								,
+								dateRaw: moment(action.date).format('YYYY/MM/DD')
+								,
 								memberCreator: action.memberCreator.fullName
                             }
         try{
@@ -408,6 +415,8 @@ function showData(data){
     var template = $('#template-output').html()
     console.log(JSON.stringify(data,null,2))
     $('#out').html(Mustache.render(template, data))
+	updateComments($("input[name='comments']:checked").val())
+	updateActionHighlights()
 }
  
 function readSingleFile(e) {
@@ -424,17 +433,37 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
-$(document).ready( function(){
-
-    $('#file-input').change(function(e){readSingleFile(e);});
-    $("input[name='comments']").change(function(e){
-        if($(this).val() == 'all') {
+function updateComments(showAll) {
+		if(showAll == 'all') {
             $('.action-item:not(:first-of-type)').css('display', 'block');
         } else {
             $('.action-item:not(:first-of-type)').css('display', 'none');
         }
-    });
+}
 
+function updateActionHighlights() {
+	$(".action-title").each( function() {
+		if (moment($(this).attr("action-date")) >= moment($("#highlightDate").val())) {
+			$(this).addClass('action-highlight')
+		}
+		else {
+			$(this).removeClass('action-highlight')
+		}
+	});
+}
+
+$(document).ready( function(){
+
+    $('#file-input').change(function(e){readSingleFile(e);});
+    
+	$("input[name='comments']").change(function(e){
+		updateComments($(this).val())
+    });
+	
+	$("#highlightDate").change( function() {
+		updateActionHighlights()
+	});
+		
     // Since the objects are dynamically loaded we must look for change in the 
     // document and filter on the IDs 
     $(document).on("change", "input[id*='check-card']", function() {
@@ -476,7 +505,6 @@ $(document).ready( function(){
 			$("#" + $(this).attr("list-id") + " .panel").toggleClass("no-print", true);
         }
     });
-   
 });
 </script>
 </body>
