@@ -95,7 +95,7 @@ Highlight Date </input><input type="date" id="highlightDate" />
 <div class="container-fluid"> 
 <div class="row col-md-12">
 {{#lists}}
-    <div id="{{id}}">
+    <div id="{{id}}" {{#closed}}class="hidden"{{/closed}}>
         <h3><strong><span class="glyphicon glyphicon-list-alt"></span> {{name}}</strong> <span class="no-print"><input type="checkbox" id="check-list-{{id}}" list-id="{{id}}" checked /></span></h3>
         {{#cards}}
             <div class="panel panel-default {{panelColor}}" id="{{id}}">
@@ -206,9 +206,6 @@ var sort_by = function(field, reverse, primer){
  
     for(i in trelloJson.lists){
         var list = trelloJson.lists[i]
-        if(list.closed){
-            continue;
-        }
 
         data.ref[list.id] = {
                                 id: list.id
@@ -216,6 +213,8 @@ var sort_by = function(field, reverse, primer){
                                 name: list.name
                                 ,
 								pos: list.pos
+                                ,
+                                closed: list.closed
 								,
                                 cards: []
                             }
