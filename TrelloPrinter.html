@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<!--suppress XmlDuplicatedId, HtmlUnknownAttribute -->
 <html>
  <head>
   <meta charset="UTF-8">
@@ -92,7 +93,7 @@ Highlight Date </input><input type="date" id="highlightDate" />
 
 
 <script type="text/html" id="template-output" >
-<div class="container-fluid"> 
+<div class="container-fluid">
 <div class="row col-md-12">
 {{#lists}}
     <div id="{{id}}" {{#closed}}class="hidden"{{/closed}}{{^closed}}class="row"{{/closed}}>
@@ -125,9 +126,10 @@ Highlight Date </input><input type="date" id="highlightDate" />
                         <div class="col-sm-9">
                         {{/urlCoverImage}}
                         {{^urlCoverImage}}
-                        <div class="col-sm-12">
-                        {{/urlCoverImage}}
+                            <div class="col-sm-12">
+                            {{/urlCoverImage}}
                             {{{desc}}}
+                            </div>
                         </div>
                     </div>
                     {{^descOrCoverImage}}
@@ -137,16 +139,16 @@ Highlight Date </input><input type="date" id="highlightDate" />
                 {{^actions}}
                 <span class="hidden">
                 {{/actions}}
-                <ul class="list-group"> 
+                <ul class="list-group">
                     {{#actions}}
                         <li class="list-group-item action-item">
-							<tt style="color:gray;" class="action-title" action-date="{{dateRaw}}"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt> 
+							<tt style="color:gray;" class="action-title" action-date="{{dateRaw}}"><span class="glyphicon glyphicon-comment"></span> {{date}} ({{memberCreator}})</tt>
 						{{{text}}}</li>
                     {{/actions}}
                 </ul>
                 {{^actions}}
                 </span>
-                {{/actions}}	
+                {{/actions}}
                 {{^checklists}}
                 <span class="hidden">
                 {{/checklists}}
