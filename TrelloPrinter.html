@@ -96,10 +96,10 @@ Highlight Date </input><input type="date" id="highlightDate" />
 <div class="container-fluid">
 <div class="row col-md-12">
 {{#lists}}
-    <div id="{{id}}" {{#closed}}class="hidden"{{/closed}}{{^closed}}class="row"{{/closed}}>
+    <div id="{{id}}" style="page-break-after: always" {{#closed}}class="hidden"{{/closed}}{{^closed}}class="row"{{/closed}}>
         <h3><strong><span class="glyphicon glyphicon-list-alt"></span> {{name}}</strong> <span class="no-print"><input type="checkbox" id="check-list-{{id}}" list-id="{{id}}" checked /></span></h3>
         {{#cards}}
-            <div class="panel panel-default {{panelColor}}" style="page-break-inside: avoid" id="{{id}}">
+            <div class="panel panel-default {{panelColor}}" style="page-break-inside: auto" id="{{id}}">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-sm-4">
@@ -126,10 +126,9 @@ Highlight Date </input><input type="date" id="highlightDate" />
                         <div class="col-sm-9">
                         {{/urlCoverImage}}
                         {{^urlCoverImage}}
-                            <div class="col-sm-12">
-                            {{/urlCoverImage}}
-                            {{{desc}}}
-                            </div>
+                        <div class="col-sm-12">
+                        {{/urlCoverImage}}
+                        {{{desc}}}
                         </div>
                     </div>
                     {{^descOrCoverImage}}
