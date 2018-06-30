@@ -118,12 +118,11 @@ Highlight Date </input><input type="date" id="highlightDate" />
                     <hr />
                     <div class="row">
                         {{#urlCoverImage}}
-                        <div class="col-sm-3">
+                        <div class="col-sm-12">
                             <a href="{{urlCoverImage}}" target="_blank">
-                            <img src="{{urlCoverImage}}" width="300px" class="img-responsive img-thumbnail center-block" />
+                            <img src="{{urlCoverImage}}" class="img-responsive img-thumbnail center-block" />
                             </a>
-                        </div>
-                        <div class="col-sm-9">
+                        <!--<div class="col-sm-9">-->
                         {{/urlCoverImage}}
                         {{^urlCoverImage}}
                         <div class="col-sm-12">
@@ -165,7 +164,7 @@ Highlight Date </input><input type="date" id="highlightDate" />
 				{{^attachments}}
                 <span class="hidden">
                 {{/attachments}}
-                <ul class="list-group">
+                <ul style="page-break-after-fixme: always" class="list-group">
                     {{#attachments}}
                     <li class="list-group-item"><span class="glyphicon glyphicon-paperclip"></span> <a href="{{url}}" target="_blank">{{name}}</a></li>
                     {{/attachments}}
